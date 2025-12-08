@@ -4,16 +4,25 @@
   "tools": {
     "claude_code": [
       {
-        "name": "git",
-        "description": "Git workflow automation and utilities",
+        "name": "aipcc",
+        "description": "AI tools for Claude Code that are specialized for AIPCC needs.",
         "commands": [
           {
-            "name": "aipcc-commit-suggest",
+            "name": "commit-suggest",
             "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
-            "synopsis": "/git:aipcc-commit-suggest       # Analyze staged changes",
+            "synopsis": "/aipcc:commit-suggest       # Analyze staged changes",
             "argument_hint": "[N]"
           }
         ],
+        "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "git",
+        "description": "Git workflow automation and utilities",
+        "commands": [],
         "skills": [
           {
             "name": "shallow-clone",
@@ -163,14 +172,14 @@
     ],
     "cursor": [
       {
-        "name": "commit-suggest-aipcc",
+        "name": "aipcc-commit-suggest",
         "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
         "commands": [
           {
-            "name": "suggest-aipcc",
-            "full_command_name": "commit-suggest-aipcc",
+            "name": "commit-suggest",
+            "full_command_name": "aipcc-commit-suggest",
             "description": "Generate AIPCC Commits style commit messages or summarize existing commits",
-            "synopsis": "/git:aipcc-commit-suggest       # Analyze staged changes",
+            "synopsis": "/aipcc-commit-suggest       # Analyze staged changes",
             "argument_hint": "[N]"
           }
         ],

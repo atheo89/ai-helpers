@@ -4,6 +4,7 @@ This document lists all available Claude Code tools, Cursor tools, and Gemini Ge
 
 ## Claude Code Tools
 
+- [Aipcc](#aipcc-claude-code-tool)
 - [Git](#git-claude-code-tool)
 - [Gitlab](#gitlab-claude-code-tool)
 - [Jira](#jira-claude-code-tool)
@@ -14,7 +15,7 @@ This document lists all available Claude Code tools, Cursor tools, and Gemini Ge
 
 ## Cursor Tools
 
-- [Commit](#commit-cursor-tool)
+- [Aipcc](#aipcc-cursor-tool)
 - [Jira](#jira-cursor-tool)
 - [Konflux](#konflux-cursor-tool)
 - [Rpm](#rpm-cursor-tool)
@@ -28,12 +29,18 @@ This document lists all available Claude Code tools, Cursor tools, and Gemini Ge
 
 ## Claude Code Tools
 
+### Aipcc Claude Code Tool
+
+AI tools for Claude Code that are specialized for AIPCC needs.
+
+**Commands:**
+- **`/aipcc:commit-suggest` `[N]`** - Generate AIPCC Commits style commit messages or summarize existing commits
+
+See [claude-plugins/aipcc/README.md](claude-plugins/aipcc/README.md) for detailed documentation.
+
 ### Git Claude Code Tool
 
 Git workflow automation and utilities
-
-**Commands:**
-- **`/git:aipcc-commit-suggest` `[N]`** - Generate AIPCC Commits style commit messages or summarize existing commits
 
 **Skills:**
 - **shallow-clone** - Perform a shallow clone of a Git repository to a temporary location.
@@ -107,12 +114,12 @@ See [claude-plugins/utils/README.md](claude-plugins/utils/README.md) for detaile
 
 ## Cursor Tools
 
-### Commit Cursor Tool
+### Aipcc Cursor Tool
 
-Commit workflow automation for Cursor AI integration
+Aipcc workflow automation for Cursor AI integration
 
 **Commands:**
-- **`/commit-suggest-aipcc` `[N]`** - Generate AIPCC Commits style commit messages or summarize existing commits
+- **`/aipcc-commit-suggest` `[N]`** - Generate AIPCC Commits style commit messages or summarize existing commits
 
 See [cursor/README.md](cursor/README.md) for installation and usage instructions.
 

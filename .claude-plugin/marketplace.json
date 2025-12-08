@@ -5,6 +5,11 @@
   },
   "plugins": [
     {
+      "name": "aipcc",
+      "source": "./claude-plugins/aipcc",
+      "description": "AI tools for Claude Code that are specialized for AIPCC needs."
+    },
+    {
       "name": "git",
       "source": "./claude-plugins/git",
       "description": "Git workflow automation and utilities"
