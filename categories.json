@@ -10,6 +10,7 @@
         "konflux",
         "python-packaging",
         "rpm",
+        "slack",
         "utils"
       ],
       "cursor_commands": [

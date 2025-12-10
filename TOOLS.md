@@ -11,6 +11,7 @@ This document lists all available Claude Code tools, Cursor tools, and Gemini Ge
 - [Konflux](#konflux-claude-code-tool)
 - [Python Packaging](#python-packaging-claude-code-tool)
 - [Rpm](#rpm-claude-code-tool)
+- [Slack](#slack-claude-code-tool)
 - [Utils](#utils-claude-code-tool)
 
 ## Cursor Tools
@@ -101,6 +102,15 @@ Tools for working with RPMs
 - **`/rpm:examine` `[copr-chroot-url] OR [build-log-url] [srpm-url] OR [build.log] [specfile|dist-git] [sources]`** - Analyze RPM build.log failures
 
 See [claude-plugins/rpm/README.md](claude-plugins/rpm/README.md) for detailed documentation.
+
+### Slack Claude Code Tool
+
+Slack plugin
+
+**Skills:**
+- **vLLM Weekly Summary** - Generate weekly summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team
+
+See [claude-plugins/slack/README.md](claude-plugins/slack/README.md) for detailed documentation.
 
 ### Utils Claude Code Tool
 

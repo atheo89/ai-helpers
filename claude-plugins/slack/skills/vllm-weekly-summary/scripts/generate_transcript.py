@@ -40,9 +40,9 @@ from typing import List, Dict, Any
 
 # Security validation patterns
 # Slack channel IDs: alphanumeric, typically start with C, D, G, or U
-CHANNEL_ID_PATTERN = re.compile(r'^[A-Z][A-Z0-9]{8,}$')
+CHANNEL_ID_PATTERN = re.compile(r"^[A-Z][A-Z0-9]{8,}$")
 # Dangerous characters for paths: shell metacharacters, control chars, newlines
-UNSAFE_PATH_PATTERN = re.compile(r'[;\n\r\0`$|&<>\'\"\\]')
+UNSAFE_PATH_PATTERN = re.compile(r"[;\n\r\0`$|&<>\'\"\\]")
 
 
 def validate_channel_id(channel_id: str) -> str:
@@ -98,7 +98,7 @@ def validate_output_dir(output_dir: str) -> str:
         )
 
     # Check for null bytes (can bypass security checks)
-    if '\x00' in output_dir:
+    if "\x00" in output_dir:
         raise ValueError("Output directory cannot contain null bytes")
 
     return output_dir
@@ -125,19 +125,26 @@ def export_slack_messages(channel_id, days_back, output_dir):
     end_date = datetime.now()
     start_date = end_date - timedelta(days=days_back)
 
-    time_from = start_date.strftime('%Y-%m-%dT00:00:00')
-    time_to = end_date.strftime('%Y-%m-%dT23:59:59')
+    time_from = start_date.strftime("%Y-%m-%dT00:00:00")
+    time_to = end_date.strftime("%Y-%m-%dT23:59:59")
 
     cmd = [
-        'slackdump', 'export',
-        '-time-from', time_from,
-        '-time-to', time_to,
-        '-type', 'standard',
-        '-o', str(output_dir),
-        channel_id
+        "slackdump",
+        "export",
+        "-time-from",
+        time_from,
+        "-time-to",
+        time_to,
+        "-type",
+        "standard",
+        "-o",
+        str(output_dir),
+        channel_id,
     ]
 
-    run_command(cmd, f"Exporting Slack messages from {start_date.date()} to {end_date.date()}")
+    run_command(
+        cmd, f"Exporting Slack messages from {start_date.date()} to {end_date.date()}"
+    )
     return output_dir
 
 
@@ -150,21 +157,23 @@ def load_users(users_file: str) -> Dict[str, Dict[str, Any]]:
     """Load user data from users.json and create a lookup dictionary."""
     print(f"📂 Loading users from {users_file}")
 
-    with open(users_file, 'r', encoding='utf-8') as f:
+    with open(users_file, "r", encoding="utf-8") as f:
         users_data = json.load(f)
 
     # Create user_id -> user info mapping
     user_lookup = {}
     for user in users_data:
-        user_id = user.get('id')
-        profile = user.get('profile', {})
+        user_id = user.get("id")
+        profile = user.get("profile", {})
 
         user_lookup[user_id] = {
-            'real_name': user.get('real_name', profile.get('real_name', 'Unknown User')),
-            'display_name': profile.get('display_name', ''),
-            'name': user.get('name', ''),
-            'email': profile.get('email', ''),
-            'is_bot': user.get('is_bot', False)
+            "real_name": user.get(
+                "real_name", profile.get("real_name", "Unknown User")
+            ),
+            "display_name": profile.get("display_name", ""),
+            "name": user.get("name", ""),
+            "email": profile.get("email", ""),
+            "is_bot": user.get("is_bot", False),
         }
 
     print(f"✅ Loaded {len(user_lookup)} users")
@@ -179,7 +188,7 @@ def timestamp_to_datetime(ts: str) -> datetime:
 def format_timestamp(ts: str) -> str:
     """Format Slack timestamp for human readability."""
     dt = timestamp_to_datetime(ts)
-    return dt.strftime('%Y-%m-%d %H:%M:%S')
+    return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
 def get_user_display(user_id: str, user_lookup: Dict[str, Dict[str, Any]]) -> str:
@@ -187,24 +196,32 @@ def get_user_display(user_id: str, user_lookup: Dict[str, Dict[str, Any]]) -> st
     user = user_lookup.get(user_id, {})
 
     # Prefer display_name, fallback to real_name, then name, then user_id
-    display_name = user.get('display_name') or user.get('real_name') or user.get('name') or user_id
+    display_name = (
+        user.get("display_name") or user.get("real_name") or user.get("name") or user_id
+    )
 
     # Add [Bot] indicator if it's a bot
-    if user.get('is_bot'):
+    if user.get("is_bot"):
         display_name = f"{display_name} [Bot]"
 
     return display_name
 
 
-def extract_text_from_message(message: Dict[str, Any], user_lookup: Dict[str, Dict[str, Any]]) -> str:
+def extract_text_from_message(
+    message: Dict[str, Any], user_lookup: Dict[str, Dict[str, Any]]
+) -> str:
     """Extract clean text from message, handling various Slack formats with markdown."""
     # Primary text field
-    text = message.get('text', '')
+    text = message.get("text", "")
 
     # Ensure code blocks have newlines around them
     # Match ```...``` and ensure newlines before and after
-    text = re.sub(r'(?<!\n)(```)', r'\n\1', text)  # Add newline before ``` if not present
-    text = re.sub(r'(```[^`]*```)(?!\n)', r'\1\n', text)  # Add newline after ``` if not present
+    text = re.sub(
+        r"(?<!\n)(```)", r"\n\1", text
+    )  # Add newline before ``` if not present
+    text = re.sub(
+        r"(```[^`]*```)(?!\n)", r"\1\n", text
+    )  # Add newline after ``` if not present
 
     # Replace user mentions <@U123456> with **@username**
     def replace_mention(match):
@@ -212,53 +229,53 @@ def extract_text_from_message(message: Dict[str, Any], user_lookup: Dict[str, Di
         user_name = get_user_display(user_id, user_lookup)
         return f"**@{user_name}**"
 
-    text = re.sub(r'<@([A-Z0-9]+)>', replace_mention, text)
+    text = re.sub(r"<@([A-Z0-9]+)>", replace_mention, text)
 
     # Replace channel mentions <#C123456|channel-name> with **#channel-name**
-    text = re.sub(r'<#[A-Z0-9]+\|([^>]+)>', r'**#\1**', text)
+    text = re.sub(r"<#[A-Z0-9]+\|([^>]+)>", r"**#\1**", text)
 
     # Clean up URLs - keep them but remove the < > wrapper
-    text = re.sub(r'<(https?://[^|>]+)(?:\|[^>]+)?>', r'\1', text)
+    text = re.sub(r"<(https?://[^|>]+)(?:\|[^>]+)?>", r"\1", text)
 
     # Convert inline code: `code` stays as is (Slack uses backticks same as markdown)
 
     # Convert Slack's bold *text* to markdown **text**
-    text = re.sub(r'(?<!\*)\*(?!\*)([^\*]+)\*(?!\*)', r'**\1**', text)
+    text = re.sub(r"(?<!\*)\*(?!\*)([^\*]+)\*(?!\*)", r"**\1**", text)
 
     # Convert Slack's italic _text_ to markdown *text*
-    text = re.sub(r'(?<!_)_(?!_)([^_]+)_(?!_)', r'*\1*', text)
+    text = re.sub(r"(?<!_)_(?!_)([^_]+)_(?!_)", r"*\1*", text)
 
     # Convert Slack's strikethrough ~text~ to markdown ~~text~~
-    text = re.sub(r'~([^~]+)~', r'~~\1~~', text)
+    text = re.sub(r"~([^~]+)~", r"~~\1~~", text)
 
     # Also check if there are attachments with text
-    attachments = message.get('attachments', [])
+    attachments = message.get("attachments", [])
     if attachments:
         attachment_texts = []
         for att in attachments:
-            att_text = att.get('text', '')
+            att_text = att.get("text", "")
             if att_text:
                 # Apply same replacements to attachment text
-                att_text = re.sub(r'<@([A-Z0-9]+)>', replace_mention, att_text)
-                att_text = re.sub(r'<#[A-Z0-9]+\|([^>]+)>', r'**#\1**', att_text)
-                att_text = re.sub(r'<(https?://[^|>]+)(?:\|[^>]+)?>', r'\1', att_text)
+                att_text = re.sub(r"<@([A-Z0-9]+)>", replace_mention, att_text)
+                att_text = re.sub(r"<#[A-Z0-9]+\|([^>]+)>", r"**#\1**", att_text)
+                att_text = re.sub(r"<(https?://[^|>]+)(?:\|[^>]+)?>", r"\1", att_text)
                 attachment_texts.append(f"\n> 📎 *Attachment:* {att_text}")
         if attachment_texts:
-            text += '\n'.join(attachment_texts)
+            text += "\n".join(attachment_texts)
 
     # Handle files
-    files = message.get('files', [])
+    files = message.get("files", [])
     if files:
         file_info = []
         for f in files:
-            file_name = f.get('name', f.get('title', 'unnamed'))
-            file_type = f.get('pretty_type', f.get('filetype', ''))
+            file_name = f.get("name", f.get("title", "unnamed"))
+            file_type = f.get("pretty_type", f.get("filetype", ""))
             file_info.append(f"\n📄 *File:* `{file_name}` ({file_type})")
         if file_info:
-            text += '\n'.join(file_info)
+            text += "\n".join(file_info)
 
     # Handle reactions
-    reactions = message.get('reactions', [])
+    reactions = message.get("reactions", [])
     if reactions:
         reaction_strs = [f":{r['name']}: ({r['count']})" for r in reactions]
         text += f"\n\n*Reactions:* {', '.join(reaction_strs)}"
@@ -267,18 +284,16 @@ def extract_text_from_message(message: Dict[str, Any], user_lookup: Dict[str, Di
 
 
 def process_messages_file(
-    file_path: str,
-    user_lookup: Dict[str, Dict[str, Any]],
-    include_threads: bool = True
+    file_path: str, user_lookup: Dict[str, Dict[str, Any]], include_threads: bool = True
 ) -> List[str]:
     """Process a single Slack messages JSON file and return formatted transcript lines."""
     print(f"📄 Processing {file_path}")
 
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         messages = json.load(f)
 
     # Sort messages by timestamp
-    messages.sort(key=lambda m: float(m.get('ts', '0')))
+    messages.sort(key=lambda m: float(m.get("ts", "0")))
 
     transcript_lines = []
 
@@ -287,8 +302,8 @@ def process_messages_file(
     standalone_messages = []
 
     for message in messages:
-        thread_ts = message.get('thread_ts')
-        ts = message.get('ts')
+        thread_ts = message.get("thread_ts")
+        ts = message.get("ts")
 
         if thread_ts and thread_ts != ts:
             # This is a reply in a thread
@@ -300,14 +315,14 @@ def process_messages_file(
 
     # Process all messages (standalone and thread parents)
     for message in standalone_messages:
-        msg_type = message.get('type', '')
+        msg_type = message.get("type", "")
 
         # Skip non-message types
-        if msg_type != 'message':
+        if msg_type != "message":
             continue
 
-        user_id = message.get('user', 'UNKNOWN')
-        ts = message.get('ts', '0')
+        user_id = message.get("user", "UNKNOWN")
+        ts = message.get("ts", "0")
         text = extract_text_from_message(message, user_lookup)
 
         # Format the message with markdown
@@ -320,29 +335,37 @@ def process_messages_file(
         # Add thread replies if they exist and are requested
         if include_threads and ts in threads:
             transcript_lines.append("\n> **Thread replies:**")
-            for reply in sorted(threads[ts], key=lambda m: float(m.get('ts', '0'))):
-                reply_user_id = reply.get('user', 'UNKNOWN')
-                reply_ts = reply.get('ts', '0')
+            for reply in sorted(threads[ts], key=lambda m: float(m.get("ts", "0"))):
+                reply_user_id = reply.get("user", "UNKNOWN")
+                reply_ts = reply.get("ts", "0")
                 reply_text = extract_text_from_message(reply, user_lookup)
 
                 reply_user_display = get_user_display(reply_user_id, user_lookup)
                 reply_timestamp_str = format_timestamp(reply_ts)
 
-                transcript_lines.append(f"> **[{reply_timestamp_str}] {reply_user_display}:**")
+                transcript_lines.append(
+                    f"> **[{reply_timestamp_str}] {reply_user_display}:**"
+                )
                 # Indent reply text with quote markers
-                for line in reply_text.split('\n'):
+                for line in reply_text.split("\n"):
                     transcript_lines.append(f"> {line}")
 
     print(f"✅ Processed {len(messages)} messages from {file_path}")
     return transcript_lines
 
 
-def convert_to_transcript(export_dir: str, channel_name: str, output_file: str, include_threads: bool = True):
+def convert_to_transcript(
+    export_dir: str, channel_name: str, output_file: str, include_threads: bool = True
+):
     """Convert Slack export to markdown transcript."""
     export_path = Path(export_dir)
 
     # Find the channel directory (should be the only directory besides attachments)
-    channel_dirs = [d for d in export_path.iterdir() if d.is_dir() and d.name not in ['attachments', '__uploads']]
+    channel_dirs = [
+        d
+        for d in export_path.iterdir()
+        if d.is_dir() and d.name not in ["attachments", "__uploads"]
+    ]
 
     if not channel_dirs:
         print(f"❌ Error: No channel directory found in {export_dir}")
@@ -372,19 +395,18 @@ def convert_to_transcript(export_dir: str, channel_name: str, output_file: str, 
     all_transcript_lines = []
 
     # Add header with markdown
-    header_lines = [
-        "# Slack Conversation Transcript",
-        ""
-    ]
+    header_lines = ["# Slack Conversation Transcript", ""]
     if channel_name:
         header_lines.append(f"**Channel:** {channel_name}")
-    header_lines.extend([
-        f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-        f"**Files processed:** {len(message_files)}",
-        "",
-        "---",
-        ""
-    ])
+    header_lines.extend(
+        [
+            f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            f"**Files processed:** {len(message_files)}",
+            "",
+            "---",
+            "",
+        ]
+    )
     all_transcript_lines.extend(header_lines)
 
     # Process each file
@@ -394,9 +416,7 @@ def convert_to_transcript(export_dir: str, channel_name: str, output_file: str, 
 
         try:
             lines = process_messages_file(
-                msg_file,
-                user_lookup,
-                include_threads=include_threads
+                msg_file, user_lookup, include_threads=include_threads
             )
             all_transcript_lines.extend(lines)
         except Exception as e:
@@ -404,19 +424,14 @@ def convert_to_transcript(export_dir: str, channel_name: str, output_file: str, 
             continue
 
     # Add footer
-    footer_lines = [
-        "",
-        "---",
-        "",
-        "*End of transcript*"
-    ]
+    footer_lines = ["", "---", "", "*End of transcript*"]
     all_transcript_lines.extend(footer_lines)
 
     # Output
-    transcript_text = '\n'.join(all_transcript_lines)
+    transcript_text = "\n".join(all_transcript_lines)
 
     print(f"📝 Writing transcript to {output_file}")
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         f.write(transcript_text)
     print(f"✅ Transcript written to {output_file}")
 
@@ -424,10 +439,20 @@ def convert_to_transcript(export_dir: str, channel_name: str, output_file: str, 
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate weekly summary of vLLM CI Slack channel')
-    parser.add_argument('--days', type=int, default=7, help='Number of days to look back (default: 7)')
-    parser.add_argument('--channel', default='C07R5PAL2L9', help='Slack channel ID (default: vLLM CI SIG)')
-    parser.add_argument('--output-dir', default='vllm_weekly_summary', help='Output directory')
+    parser = argparse.ArgumentParser(
+        description="Generate weekly summary of vLLM CI Slack channel"
+    )
+    parser.add_argument(
+        "--days", type=int, default=7, help="Number of days to look back (default: 7)"
+    )
+    parser.add_argument(
+        "--channel",
+        default="C07R5PAL2L9",
+        help="Slack channel ID (default: vLLM CI SIG)",
+    )
+    parser.add_argument(
+        "--output-dir", default="vllm_weekly_summary", help="Output directory"
+    )
 
     args = parser.parse_args()
 
@@ -462,7 +487,7 @@ def main():
 
     # Read the transcript
     try:
-        with open(transcript_file, 'r', encoding='utf-8') as f:
+        with open(transcript_file, "r", encoding="utf-8") as f:
             transcript_content = f.read()
     except (OSError, UnicodeDecodeError) as e:
         print(f"❌ Error: Failed to read transcript file '{transcript_file}': {e}")
@@ -475,8 +500,12 @@ def main():
 
     print("CONTEXT:")
     print("- vLLM is an open-source project for efficient LLM serving")
-    print("- Red Hat builds and releases a midstream version called RHAIIS (Red Hat AI Inference Server)")
-    print("- The CI SIG channel discusses CI/CD infrastructure, test failures, build issues, and release engineering")
+    print(
+        "- Red Hat builds and releases a midstream version called RHAIIS (Red Hat AI Inference Server)"
+    )
+    print(
+        "- The CI SIG channel discusses CI/CD infrastructure, test failures, build issues, and release engineering"
+    )
     print("\nPLEASE PROVIDE A SUMMARY WITH THESE SECTIONS:")
     print("1. Executive Summary (2-3 sentences)")
     print("2. Key Issues & Resolutions")
