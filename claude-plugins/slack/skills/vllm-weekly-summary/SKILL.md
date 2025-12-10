@@ -14,9 +14,6 @@ when_to_use: |
   Use this skill when:
   - The user asks for a weekly summary of vLLM CI channel
   - The user wants to know what happened in the vLLM community this week
-  - The user needs to prepare a status report for the RHAIIS team
-  - The user wants to track upstream vLLM CI/CD changes
-  - It's time for weekly team sync and you need upstream updates
 ---
 
 # vLLM Weekly Summary Skill
@@ -105,8 +102,6 @@ After the skill generates the transcript, it will:
    - Notable Contributors & Discussions
 3. **Save the summary to file** at `vllm_weekly_summary/weekly_summary_YYYY-MM-DD_to_YYYY-MM-DD.md`
 
-The summary file is automatically created and ready for distribution to the RHAIIS team.
-
 ## Context for Summarization
 
 When summarizing the transcript, consider:
@@ -142,19 +137,7 @@ When summarizing the transcript, consider:
 4. The summary is automatically saved to `weekly_summary_YYYY-MM-DD_to_YYYY-MM-DD.md`.
 5. Review and distribute the summary file to the RHAIIS team.
 
-## Customization Options
-
-### Adjust Time Window
-The `--days` parameter controls how far back to look (default: 7 days)
-
-### Change Channel
-The `--channel` parameter allows monitoring different Slack channels (default: vLLM CI SIG)
-
-### Output Location
-The `--output-dir` parameter specifies where to save the export and transcript
-
 ## Troubleshooting
-
 ### "slackdump not found"
 Ensure slackdump is installed and in your PATH:
 ```bash
@@ -166,13 +149,6 @@ Run `slackdump workspace add` to authenticate with the vLLM workspace
 
 ### "No messages found"
 Check the date range and channel ID. The channel may not have messages in that time period.
-
-## Quick Reference
-
-**Default Command:**
-```bash
-./scripts/generate_transcript.py
-```
 
 **Output:**
 - Transcript: `vllm_weekly_summary/transcript.md`
