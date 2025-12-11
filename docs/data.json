@@ -14,6 +14,7 @@
           "konflux",
           "python-packaging",
           "rpm",
+          "slack",
           "utils"
         ],
         "cursor_commands": [
@@ -229,6 +230,23 @@
           }
         ],
         "skills": [],
+        "hooks": [],
+        "agents": [],
+        "has_readme": true
+      },
+      {
+        "name": "slack",
+        "description": "Slack plugin",
+        "category": "general",
+        "commands": [],
+        "skills": [
+          {
+            "name": "vLLM Slack Summary",
+            "id": "vllm-slack-summary",
+            "description": "Generate slack summaries of vLLM CI SIG Slack channel activity for the RHAIIS midstream release team",
+            "file_path": "claude-plugins/slack/skills/vllm-slack-summary/SKILL.md"
+          }
+        ],
         "hooks": [],
         "agents": [],
         "has_readme": true
