@@ -23,7 +23,7 @@
       },
       {
         "name": "codebase-explainer",
-        "description": "Use me to navigate and understand a codebase\u2014start with questions like, \u201cGive me a high-level overview of this repo",
+        "description": "Your AI guide for code exploration. I help you understand complex repositories, from big-picture overviews to file-level details.",
         "category": "general",
         "file_path": "",
         "link": "https://gemini.google.com/gem/1gY4g7MaPaAubmHmWrYiJuOSG0FF9VxLD?usp=sharing"
